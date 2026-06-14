@@ -1,0 +1,6 @@
+{
+  "name": "Medical Reminder",
+  "description": "Comprehensive full-stack medicine scheduling, appointment manager, vital tracking, and prescription OCR parsing helper.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

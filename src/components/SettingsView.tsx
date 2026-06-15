@@ -14,18 +14,21 @@ export default function SettingsView() {
   
   const [saveLoading, setSaveLoading] = useState(false);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!profileName || !profileEmail) {
+      alert("Please provide flat name and email inputs");
+      return;
+    }
     setSaveLoading(true);
-    setTimeout(() => {
-      if (currentUser) {
-        currentUser.fullName = profileName;
-        currentUser.email = profileEmail;
-        localStorage.setItem("med_rem_user", JSON.stringify(currentUser));
-        alert("Personal profile preferences saved successfully.");
-      }
+    try {
+      await api.updateProfile(profileName, profileEmail, new Date().getTimezoneOffset());
+      alert("Personal profile preferences saved successfully across clinical systems.");
+    } catch (err: any) {
+      alert("Failed to update profile values on the server: " + (err.message || err));
+    } finally {
       setSaveLoading(false);
-    }, 600);
+    }
   };
 
   return (
@@ -142,6 +145,26 @@ export default function SettingsView() {
                   className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded cursor-pointer"
                 />
               </label>
+            </div>
+
+            {/* SMTP Activation Panel */}
+            <div className="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-[11px] leading-relaxed">
+              <h4 className="font-extrabold text-teal-800 flex items-center gap-1">
+                <Sparkles size={13} className="text-teal-600" /> Real-Time Email Setup Instructions
+              </h4>
+              <p className="text-slate-500 font-medium">
+                To route actual dose alarms and consultation briefs straight to your mailbox (e.g., <strong className="text-slate-700">{profileEmail || "your email"}</strong>), please configure your SMTP details inside the <strong>Secrets Settings panel</strong> in AI Studio:
+              </p>
+              <div className="font-mono text-[9px] bg-white border border-slate-200 p-2.5 rounded-lg space-y-1 text-slate-600 select-all leading-tight">
+                <p>SMTP_HOST=smtp.gmail.com</p>
+                <p>SMTP_PORT=465</p>
+                <p>SMTP_USER=ushak20051@gmail.com</p>
+                <p>SMTP_PASS=your_gmail_app_password</p>
+                <p>SMTP_FROM="Aegis MedRem" &lt;ushak20051@gmail.com&gt;</p>
+              </div>
+              <p className="text-[10px] text-teal-700 font-bold">
+                * Note: Aegis MedRem background cron daemon runs every 60s, automatically converting due pending reminders into clinical emails.
+              </p>
             </div>
           </div>
         </div>

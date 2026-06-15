@@ -67,7 +67,7 @@ export const api = {
   async login(username: string, password: string): Promise<{ token: string; user: User }> {
     const data = await this.request("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password, timezoneOffset: new Date().getTimezoneOffset() })
     });
     this.setSession(data.token, data.user);
     return data;
@@ -76,7 +76,7 @@ export const api = {
   async register(payload: any): Promise<{ token: string; user: User }> {
     const data = await this.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ ...payload, timezoneOffset: new Date().getTimezoneOffset() })
     });
     this.setSession(data.token, data.user);
     return data;
@@ -84,6 +84,18 @@ export const api = {
 
   async refreshProfile(): Promise<User> {
     const data = await this.request("/auth/me");
+    if (currentUser) {
+      currentUser = { ...currentUser, ...data };
+      localStorage.setItem("med_rem_user", JSON.stringify(currentUser));
+    }
+    return data;
+  },
+
+  async updateProfile(fullName: string, email: string, timezoneOffset: number): Promise<User> {
+    const data = await this.request("/auth/me", {
+      method: "PUT",
+      body: JSON.stringify({ fullName, email, timezoneOffset })
+    });
     if (currentUser) {
       currentUser = { ...currentUser, ...data };
       localStorage.setItem("med_rem_user", JSON.stringify(currentUser));

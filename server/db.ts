@@ -11,6 +11,7 @@ export interface User {
   passwordHash: string;
   role: "user" | "admin" | "caregiver";
   caregiverId?: string; // Links user to caregiver
+  timezoneOffset?: number;
 }
 
 export interface Medicine {
@@ -39,6 +40,7 @@ export interface Reminder {
   status: "pending" | "taken" | "skipped";
   actualTime?: string;
   notes?: string;
+  emailSent?: boolean;
 }
 
 export interface Appointment {
